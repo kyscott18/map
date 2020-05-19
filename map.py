@@ -86,18 +86,24 @@ def main():
 
 	#find the start of the loop
 	data_index = 0
-	mat = []
-	Loop loop()
-	for template_index in range(len(template)):
-		data_index = match(template, template_index, data, data_index)
-		#compute time until the next point
-		if template_index == 0:
-			tim = 0
-		else: 
-			tim = data[data_index][1] - mat[template_index - 1][1]
-		print(tim)
-		mat.append([data[data_index][0], data[data_index][1], tim, data[data_index][4]])
-		data_index += 1
+	while distance(data[data_index][2], template[0][0], data[data_index][3], template[0][1]) < 28:
+		++data_index
+	print(data_index)
+	#for each point in data
+	# for data_index in range(len(data)):
+
+	# mat = []
+	# Loop loop()
+	# for template_index in range(len(template)):
+	# 	data_index = match(template, template_index, data, data_index)
+	# 	#compute time until the next point
+	# 	if template_index == 0:
+	# 		tim = 0
+	# 	else: 
+	# 		tim = data[data_index][1] - mat[template_index - 1][1]
+	# 	print(tim)
+	# 	mat.append([data[data_index][0], data[data_index][1], tim, data[data_index][4]])
+	# 	data_index += 1
 	#for each point in template
 	#match to a data point and calc time passes
 	#train
