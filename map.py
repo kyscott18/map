@@ -2,7 +2,7 @@ import csv
 from math import radians, cos, sin, asin, sqrt
 
 class Loop:
-	def __init(self, day, start_time): 
+	def __init__(self, day, start_time): 
 		self.day = day
 		self.start_time = start_time
 		self.data = []
@@ -54,9 +54,6 @@ def garmin_to(file):
 				line_count += 1
 	return data
 
-def train(): 
-	print("c")
-
 def distance(lat1, lat2, lon1, lon2):
 	lon1 = radians(float(lon1))
 	lon2 = radians(float(lon2))
@@ -73,46 +70,80 @@ def match(template, template_index, data, data_index):
 	#find the index of the data point that matches the cordinates of the template point
 	#starting at the data index, go through the data points until one is found within 25 meters
 	for i in range(60):
+		if data_index >= len(data):
+			print("out of points")
+			return data_index
 		if distance(data[data_index][2], template[template_index][0], data[data_index][3], template[template_index][1]) < 28:
 			return data_index
 		data_index += 1
 	print("miss")
 	return data_index
 
+def avg(master):
+	average = []
+	for p in range(len(master[0].data)):
+		a = 0 
+		for l in master:
+			a += l.data[p]
+		average.append(a)
+	for i in range(len(average)):
+		average[i] /= len(master)
+	return average
+
+def t_avg(master, t):
+	time_average = []
+	count = 0
+	for p in range(len(master[0].data)):
+		a = 0 
+		for l in master:
+			#if time is in the range
+			if l.time > t - (60*30) and l.time < t + (60 * 30)
+				count += 1
+				a += l.data[p]
+			if a == 0:
+				print("Error, no matching time data")
+		average.append(a)
+	for i in range(len(average)):
+		average[i] /= count
+	return average
+
 def main():
-	#format
+	master = []
+	#FORMAT
 	template = csv_to('output-2.csv')
 	data = garmin_to('route1.csv')
 
 	#find the start of the loop
 	data_index = 0
-	while distance(data[data_index][2], template[0][0], data[data_index][3], template[0][1]) < 28:
-		++data_index
-	print(data_index)
+	template_index = 0
+	time_hold = 0
+	loop = Loop('0', 0)
 	#for each point in data
-	# for data_index in range(len(data)):
+	while data_index < len(data):
+		#find data_index of point matching the next template
+		data_index = match(template, template_index, data, data_index)
 
-	# mat = []
-	# Loop loop()
-	# for template_index in range(len(template)):
-	# 	data_index = match(template, template_index, data, data_index)
-	# 	#compute time until the next point
-	# 	if template_index == 0:
-	# 		tim = 0
-	# 	else: 
-	# 		tim = data[data_index][1] - mat[template_index - 1][1]
-	# 	print(tim)
-	# 	mat.append([data[data_index][0], data[data_index][1], tim, data[data_index][4]])
-	# 	data_index += 1
-	#for each point in template
-	#match to a data point and calc time passes
-	#train
-	
-	#predict
-	#for each template point in a row
-		#match find the matching data point while couting the time in between matches
-		#compute
-	#predict
+		if (template_index == 0):
+			loop = Loop(data[data_index][0], data[data_index][1])
+			template_index += 1
+			time_hold = data[data_index][1]
+		elif template_index == len(template) - 1:
+			loop.data.append(data[data_index][1] - time_hold)
+			master.append(loop)
+			template_index = 0
+		else: 
+			loop.data.append(data[data_index][1] - time_hold)
+			time_hold = data[data_index][1]
+			template_index += 1
+		data_index += 1
+
+	#get data from avg, most recent, and avg at the same time
+	average = avg(master)
+	most_recent = master[-1].data
+	time_average = t_avg(master)
+	#TRAIN
+
+
 	
 if __name__ == "__main__": 
 	main()
